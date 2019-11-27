@@ -132,7 +132,7 @@ public class Assignment8
             return makeIfGoto( parts[1] );
         }
         else if("function".equals( parts[0] ) ) {
-            return
+            return makeFunction(parts[1],parts[2]);
         }        
         throw new IllegalArgumentException( "Unknown command '" + command + "'" );
     }
@@ -151,7 +151,7 @@ public class Assignment8
      /**
       * makeGoto command
       * 
-      * makes
+      * makes the assembly isntructions for Goto commands
       */
 
       private static String makeGoto(String where) {
@@ -175,7 +175,16 @@ public class Assignment8
           "D;JNE");
       }
 
+      /**
+       * makeFunction command
+       * 
+       * Makes function lines
+       */
 
+      private static String makeFunction(String name, String nLocals) {
+          return String.join( "\n",
+          "(" + name + ")");
+      }
 
     /**
      * Helper class to hold context of a VM command being translated including:
