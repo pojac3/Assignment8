@@ -133,7 +133,10 @@ public class Assignment8
         }
         else if("function".equals( parts[0] ) ) {
             return makeFunction(parts[1],parts[2]);
-        }        
+        }
+        else if("call".equals( parts[0] ) ) {
+            return makeCall(parts[1],parts[2]);
+        }
         throw new IllegalArgumentException( "Unknown command '" + command + "'" );
     }
 
@@ -165,15 +168,15 @@ public class Assignment8
        * Pops a value off the stack, loads it into the D register and jumps if not equal to zero
        */
 
-      private static String makeIfGoto(String where) {
-          return String.join( "\n",
-          "@SP",
-          "M=M-1",
-          "A=M",
-          "D=M",
-          "@" + where,
-          "D;JNE");
-      }
+        private static String makeIfGoto(String where) {
+            return String.join( "\n",
+            "@SP",
+            "M=M-1",
+            "A=M",
+            "D=M",
+            "@" + where,
+            "D;JNE");
+        }
 
       /**
        * makeFunction command
@@ -181,10 +184,45 @@ public class Assignment8
        * Makes function lines
        */
 
-      private static String makeFunction(String name, String nLocals) {
-          return String.join( "\n",
-          "(" + name + ")");
+        private static String makeFunction(String name, String nLocals) {
+            String returnString = "(" + name + ")";
+          
+            for (int i = 0; i < Integer.parseInt(nLocals); i++) {
+                returnString += getPush(local, 0, c);
+            }
+
+            return returnString;
       }
+
+      /**
+       * makeCall command
+       * 
+       * Makes call lines
+       */
+
+       private static String makeCall(String function, String numberArgs) {
+            String returnString = "";
+
+            for (int i = 0; i < Integer.parseInt(numberArgs); i++) {
+                returnString += String.join("\n", 
+                "@SP",
+                "M=M-1",
+                "A=M",
+                "D=M",
+                "@ARG",
+                "A=M",
+                "M=D",
+                "@ARG",
+                "M=M+1");
+            }
+            returnString += String.join("\n",
+            "@" + function,
+            "0;JMP");
+
+            returnString += makeLabel("functionCall." + function);
+
+            return returnString;
+       }
 
     /**
      * Helper class to hold context of a VM command being translated including:
